@@ -1,7 +1,5 @@
 package net.machina.wirtualnauczelnia.common;
 
-import okhttp3.MediaType;
-
 public class ApiDetails {
 
 //  Adresy endpointów

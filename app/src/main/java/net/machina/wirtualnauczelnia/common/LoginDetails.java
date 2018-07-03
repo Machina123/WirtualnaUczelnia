@@ -3,8 +3,6 @@ package net.machina.wirtualnauczelnia.common;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.securepreferences.SecurePreferences;
-
 public class LoginDetails {
 
     private String identifier;

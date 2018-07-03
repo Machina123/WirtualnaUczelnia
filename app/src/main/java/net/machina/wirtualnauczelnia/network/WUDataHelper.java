@@ -2,7 +2,6 @@ package net.machina.wirtualnauczelnia.network;
 
 import android.content.Context;
 import android.net.Uri;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
