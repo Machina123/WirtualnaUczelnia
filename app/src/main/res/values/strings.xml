@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Wirtualna Uczelnia</string>
+    <string name="pictureDescription">Opis zdjęcia</string>
+    <string name="input_login">Login</string>
+    <string name="error_no_connection">Brak połączenia</string>
+    <string name="error_no_connection_body">Aplikacja do działania wymaga połączenia z internetem. Połącz się z siecią i uruchom aplikację ponownie.</string>
+    <string name="input_password">Hasło</string>
+    <string name="button_login">Zaloguj się</string>
+    <string name="label_remember">Zapamiętaj dane logowania</string>
+    <string name="label_warning">Uwaga</string>
+    <string name="error_missing_login_data">Dane logowania są niekompletne. Uzupełnij dane i zaloguj się ponownie.</string>
+    <string name="label_please_wait">Proszę czekać</string>
+    <string name="message_logging_in">Trwa logowanie...</string>
+    <string name="title_activity_main">Wirtualna Uczelnia</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_announcements">Ogłoszenia</string>
+    <string name="label_latest_announcement">Najnowsze ogłoszenie</string>
+    <string name="error_not_logged_in">Zaloguj się aby kontynuować</string>
+</resources>
