@@ -18,6 +18,8 @@ public class ApiDetails {
     public static final String API_FIELD_BUTTON_GRADES_NEXT = "ctl00$ctl00$ContentPlaceHolder$RightContentPlaceHolder$butNas";
 
     public static final String API_FIELD_VIEWSTATE = "__VIEWSTATE";
+    public static final String API_FIELD_VIEWSTATE_GENERATOR = "__VIEWSTATEGENERATOR";
+    public static final String API_FIELD_EVENT_VALIDATION = "__EVENTVALIDATION";
 
 //  Różne obiekty na stronie (selektory)
     public static final String API_SELECTOR_WHOISLOGGEDIN = ".who_is_logged_in";
@@ -26,11 +28,15 @@ public class ApiDetails {
     public static final String API_SELECTOR_GRADES_CURR_YEAR = "#ctl00_ctl00_ContentPlaceHolder_RightContentPlaceHolder_lblRok";
     public static final String API_SELECTOR_GRADES_BUTTON_NEXT = "#ctl00_ctl00_ContentPlaceHolder_RightContentPlaceHolder_butNas";
     public static final String API_SELECTOR_GRADES_BUTTON_PREV = "#ctl00_ctl00_ContentPlaceHolder_RightContentPlaceHolder_butPop";
+    public static final String API_SELECTOR_VIEWSTATE = "input[name=__VIEWSTATE]";
+    public static final String API_SELECTOR_VIEWSTATEGEN = "input[name=__VIEWSTATEGENERATOR]";
+    public static final String API_SELECTOR_EVENTVALIDATION = "input[name=__EVENTVALIDATION]";
 
 //  Domyślne wartości
     public static final String API_DEF_VALUE_LOGIN_BTN = "Zaloguj";
     public static final String API_DEF_VALUE_GRADES_PREV = "Poprzedni";
     public static final String API_DEF_VALUE_GRADES_NEXT = "Następny";
+    public static final String API_DEF_VALUE_EMPTY = "";
 
 //  różne wartości
     public static final String API_NAME_COOKIE_SESSIONID = ".ASPXUSERWU";

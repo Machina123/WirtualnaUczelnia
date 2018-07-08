@@ -4,27 +4,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
-import net.machina.wirtualnauczelnia.common.Constants;
-import net.machina.wirtualnauczelnia.common.DatasetFields;
 import net.machina.wirtualnauczelnia.common.PreferencesFields;
-import net.machina.wirtualnauczelnia.datamodel.GradeDataModel;
 import net.machina.wirtualnauczelnia.network.WUDataHelper;
 
-import java.util.HashMap;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     protected TextView txtLoggedIn;
     protected WUDataHelper dataHelper;
+    protected Button btnGrades;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         txtLoggedIn = (TextView) findViewById(R.id.main_txtLoggedIn);
+        btnGrades = (Button) findViewById(R.id.main_btnGrades);
+        btnGrades.setOnClickListener(this);
         dataHelper = WUDataHelper.getInstance(getApplicationContext());
         if(savedInstanceState == null) {
             dataHelper.getLoggedInUser(((isSuccessful, data) -> {
@@ -46,30 +45,19 @@ public class MainActivity extends AppCompatActivity {
         } else {
             txtLoggedIn.setText(savedInstanceState.getString(PreferencesFields.SHARED_PREFS_KEY_USERNAME));
         }
+    }
 
-        dataHelper.getCurrentTermGrades(((isSuccessful, dataSet) -> {
-            Log.d(Constants.LOGGER_TAG, "MainActivity - getCurrentTermGrades - isSuccessful? " + isSuccessful);
-            if(isSuccessful) {
-                for(HashMap<String, String> data : dataSet) {
-                    if(data.containsKey(DatasetFields.DS_TERMINFO_YEAR)) {
-                        Log.d(Constants.LOGGER_TAG, data.get(DatasetFields.DS_TERMINFO_YEAR));
-                        Log.d(Constants.LOGGER_TAG, data.get(DatasetFields.DS_TERMINFO_TERM));
-                    } else if(data.containsKey(DatasetFields.DS_GRADE_DETAILS[0])) {
-                        GradeDataModel grade = new GradeDataModel(
-                                data.get(DatasetFields.DS_GRADE_DETAILS[0]),
-                                data.get(DatasetFields.DS_GRADE_DETAILS[1]),
-                                data.get(DatasetFields.DS_GRADE_DETAILS[2]),
-                                data.get(DatasetFields.DS_GRADE_DETAILS[3]),
-                                data.get(DatasetFields.DS_GRADE_DETAILS[4]),
-                                data.get(DatasetFields.DS_GRADE_DETAILS[5]),
-                                data.get(DatasetFields.DS_GRADE_DETAILS[6]),
-                                data.get(DatasetFields.DS_GRADE_DETAILS[7])
-                        );
-                        Log.d(Constants.LOGGER_TAG, grade.toString());
-                    }
-                }
-            }
-        }));
+    @Override
+    public void onClick(View v) {
+        Intent startIntent;
+        switch(v.getId()) {
+            case R.id.main_btnGrades:
+                startIntent = new Intent(MainActivity.this, GradesActivity.class);
+                break;
+            default:
+                return;
+        }
+        startActivity(startIntent);
     }
 
     @Override

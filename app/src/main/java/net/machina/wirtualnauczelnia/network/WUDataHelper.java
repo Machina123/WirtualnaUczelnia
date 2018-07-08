@@ -18,9 +18,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +37,8 @@ public class WUDataHelper {
     private Context mContext;
     private OkHttpClient httpClient;
     private boolean previousTermGradesAvailable = false, nextTermGradesAvailable = false;
+
+    private String mViewState, mViewStateGenerator, mEventValidation;
 
     public WUDataHelper(Context mContext) {
         this.mContext = mContext;
@@ -93,11 +92,6 @@ public class WUDataHelper {
         });
     }
 
-    /**
-     * Wywołuje żądanie logowania
-     * @param loginDetails Dane do logowania
-     * @param listener Nasłuchiwacz, w polu `data` zwracane jest identyfikator sesji, lub `null` gdy nie udało się zalogować
-     */
     public void login(LoginDetails loginDetails, final OnNetworkDataReceivedListener listener) {
 
         FormBody formData = new FormBody.Builder()
@@ -145,12 +139,7 @@ public class WUDataHelper {
 
 
     public void getLoggedInUser(final OnNetworkDataReceivedListener listener) {
-        String sessionId;
-        File sessionIdCache = new File(this.mContext.getFilesDir(), Constants.CACHE_SESSIONID);
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(sessionIdCache));
-            sessionId = reader.readLine();
-            reader.close();
             Request request = new Request.Builder()
                     .addHeader("User-Agent", "Mozilla/5.0")
                     .url(ApiDetails.API_ADDRESS_STUDENT_DATA)
@@ -210,11 +199,14 @@ public class WUDataHelper {
 
         FormBody formBody = new FormBody.Builder()
                 .add(ApiDetails.API_FIELD_BUTTON_GRADES_PREV, ApiDetails.API_DEF_VALUE_GRADES_PREV)
-                .add(ApiDetails.API_FIELD_VIEWSTATE, "")
+                .add(ApiDetails.API_FIELD_VIEWSTATE, mViewState)
+                .add(ApiDetails.API_FIELD_VIEWSTATE_GENERATOR, mViewStateGenerator)
+                .add(ApiDetails.API_FIELD_EVENT_VALIDATION, mEventValidation)
                 .build();
 
         Request request = new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0")
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .url(ApiDetails.API_ADDRESS_GRADES)
                 .post(formBody)
                 .build();
@@ -241,11 +233,14 @@ public class WUDataHelper {
 
         FormBody formBody = new FormBody.Builder()
                 .add(ApiDetails.API_FIELD_BUTTON_GRADES_NEXT, ApiDetails.API_DEF_VALUE_GRADES_NEXT)
-                .add(ApiDetails.API_FIELD_VIEWSTATE, "")
+                .add(ApiDetails.API_FIELD_VIEWSTATE, mViewState)
+                .add(ApiDetails.API_FIELD_VIEWSTATE_GENERATOR, mViewStateGenerator)
+                .add(ApiDetails.API_FIELD_EVENT_VALIDATION, mEventValidation)
                 .build();
 
         Request request = new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0")
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .url(ApiDetails.API_ADDRESS_GRADES)
                 .post(formBody)
                 .build();
@@ -266,9 +261,13 @@ public class WUDataHelper {
 
     private void parseGradeResponse(Response response, OnNetworkDataSetReceivedListener listener) {
         try {
+            Log.d(Constants.LOGGER_TAG, "WUDataHelper/parseGradeResponse - response url: " + response.request().url().toString());
             Document document = Jsoup.parse(response.body().string());
             Elements elements = document.select(ApiDetails.API_SELECTOR_GRID_DATAROW);
             if (elements != null) {
+                mViewState = document.selectFirst(ApiDetails.API_SELECTOR_VIEWSTATE).val();
+                mViewStateGenerator = document.selectFirst(ApiDetails.API_SELECTOR_VIEWSTATEGEN).val();
+                mEventValidation = document.selectFirst(ApiDetails.API_SELECTOR_EVENTVALIDATION).val();
 
                 Element btnPrevious = document.selectFirst(ApiDetails.API_SELECTOR_GRADES_BUTTON_PREV);
                 if(btnPrevious != null) this.setPreviousTermGradesAvailable(true);
