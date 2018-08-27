@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } catch(PackageManager.NameNotFoundException e) {e.printStackTrace();}
                 break;
             case R.id.menu_main_logout:
-                askLogout();
+                askLogout(false);
                 break;
         }
 
@@ -107,31 +107,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        askLogout();
+        doLogout(true);
+        super.onBackPressed();
     }
 
-    private void askLogout() {
+    private void askLogout(boolean isExitingApp) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.button_logout)
                 .setMessage(R.string.ask_logout)
-                .setPositiveButton(R.string.button_yes, (DialogInterface dialog, int which) -> {
-                    WUDataHelper.getInstance(getApplicationContext()).logout(((isSuccessful, data) -> {
-                        if(isSuccessful) {
-                            runOnUiThread(() -> {
-                                SharedPreferences preferences = getSharedPreferences(PreferencesFields.SHARED_PREFS_FILENAME, MODE_PRIVATE);
-                                preferences.edit()
-                                        .remove(PreferencesFields.SHARED_PREFS_KEY_REMEMBER)
-                                        .remove(PreferencesFields.SHARED_PREFS_KEY_PASSWORD)
-                                        .apply();
-                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                                startActivity(intent);
-                                MainActivity.this.finish();
-                            });
-                        }
-                    }));
-                })
+                .setPositiveButton(R.string.button_yes, (DialogInterface dialog, int which) -> doLogout(isExitingApp))
                 .setNegativeButton(R.string.button_no, null)
                 .setCancelable(false)
                 .show();
+    }
+
+    private void doLogout(boolean isExitingApp) {
+        WUDataHelper.getInstance(getApplicationContext()).logout(((isSuccessful, data) -> {
+            if(isSuccessful) {
+                runOnUiThread(() -> {
+                    if(!isExitingApp) {
+                        SharedPreferences preferences = getSharedPreferences(PreferencesFields.SHARED_PREFS_FILENAME, MODE_PRIVATE);
+                        preferences.edit()
+                                .remove(PreferencesFields.SHARED_PREFS_KEY_REMEMBER)
+                                .remove(PreferencesFields.SHARED_PREFS_KEY_PASSWORD)
+                                .apply();
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                    }
+                    MainActivity.this.finish();
+                });
+            }
+        }));
     }
 }
