@@ -8,9 +8,12 @@
     <string name="button_login">Zaloguj się</string>
     <string name="label_remember">Zapamiętaj dane logowania</string>
     <string name="label_warning">Uwaga</string>
+    <string name="error_generic">Wystąpił nieznany błąd</string>
+    <string name="error_login">Błąd podczas logowania. Sprawdź podane dane i zaloguj się ponownie.</string>
     <string name="error_missing_login_data">Dane logowania są niekompletne. Uzupełnij dane i zaloguj się ponownie.</string>
     <string name="label_please_wait">Proszę czekać</string>
-    <string name="message_logging_in">Trwa logowanie...</string>
+    <string name="message_logging_in">Trwa logowanie&#8230;</string>
+    <string name="message_downloading_data">Trwa pobieranie danych&#8230;</string>
     <string name="title_activity_main">Wirtualna Uczelnia</string>
     <string name="menu_announcements">Ogłoszenia</string>
     <string name="label_latest_announcement">Najnowsze ogłoszenie</string>
@@ -19,4 +22,14 @@
     <string name="label_previous">Poprzedni</string>
     <string name="label_next">Następny</string>
     <string name="label_grades">Oceny</string>
+    <string name="label_grade_first_term">I termin</string>
+    <string name="label_grade_second_term">II termin</string>
+    <string name="label_grade_third_term">Egz. komis.</string>
+    <string name="grade_display_additional_info" translatable="false">%s h, %s ECTS</string>
+    <string name="menu_item_about">O aplikacji</string>
+    <string name="button_logout">Wyloguj się</string>
+    <string name="app_info_basic" formatted="true">%s, wersja %s\nAutor: Patryk Ciepiela\nKod źródłowy dostępny na Githubie: %s</string>
+    <string name="ask_logout">Czy na pewno chcesz się wylogować?</string>
+    <string name="button_yes">Tak</string>
+    <string name="button_no">Nie</string>
 </resources>

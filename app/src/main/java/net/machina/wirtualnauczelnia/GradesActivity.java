@@ -1,15 +1,18 @@
 package net.machina.wirtualnauczelnia;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import net.machina.wirtualnauczelnia.common.Constants;
 import net.machina.wirtualnauczelnia.common.DatasetFields;
 import net.machina.wirtualnauczelnia.datamodel.GradeDataModel;
+import net.machina.wirtualnauczelnia.datamodel.GradeListAdapter;
 import net.machina.wirtualnauczelnia.network.WUDataHelper;
 
 import java.util.ArrayList;
@@ -20,6 +23,9 @@ public class GradesActivity extends AppCompatActivity implements View.OnClickLis
     protected WUDataHelper dataHelper;
     protected Button btnPrevious, btnNext;
     protected TextView txtRow1, txtRow2;
+    protected ListView listGrades;
+
+    protected ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +40,10 @@ public class GradesActivity extends AppCompatActivity implements View.OnClickLis
 
         txtRow1 = (TextView) findViewById(R.id.grades_txtRow1);
         txtRow2 = (TextView) findViewById(R.id.grades_txtRow2);
+
+        listGrades = (ListView) findViewById(R.id.grades_listGrades);
         if(savedInstanceState == null) {
+            dialog = ProgressDialog.show(this, getString(R.string.label_please_wait), getString(R.string.message_downloading_data), true, false);
             dataHelper.getCurrentTermGrades(((isSuccessful, dataSet) -> {
                 Log.d(Constants.LOGGER_TAG, "MainActivity - getCurrentTermGrades - isSuccessful? " + isSuccessful);
                 if(isSuccessful) {
@@ -46,6 +55,7 @@ public class GradesActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
+        dialog = ProgressDialog.show(this, getString(R.string.label_please_wait), getString(R.string.message_downloading_data), true, false);
         switch(v.getId()) {
             case R.id.grades_btnPrevious:
                 dataHelper.getPreviousTermGrades(((isSuccessful, dataSet) -> {
@@ -60,7 +70,12 @@ public class GradesActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void handleGrades(ArrayList<HashMap<String, String>> dataSet) {
+
+        ArrayList<GradeDataModel> gradeList = new ArrayList<>();
+
         runOnUiThread(() -> {
+            dialog.cancel();
+
             if(dataHelper.isPreviousTermGradesAvailable()) btnPrevious.setVisibility(View.VISIBLE);
             else btnPrevious.setVisibility(View.INVISIBLE);
 
@@ -85,9 +100,12 @@ public class GradesActivity extends AppCompatActivity implements View.OnClickLis
                         data.get(DatasetFields.DS_GRADE_DETAILS[6]),
                         data.get(DatasetFields.DS_GRADE_DETAILS[7])
                 );
-                Log.d(Constants.LOGGER_TAG, grade.toString());
+                gradeList.add(grade);
             }
         }
-    }
 
+        final GradeListAdapter adapter = new GradeListAdapter(GradesActivity.this, R.layout.layout_grade_view, gradeList);
+
+        runOnUiThread(()-> listGrades.setAdapter(adapter));
+    }
 }

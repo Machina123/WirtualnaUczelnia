@@ -8,6 +8,7 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 
+import net.machina.wirtualnauczelnia.R;
 import net.machina.wirtualnauczelnia.common.ApiDetails;
 import net.machina.wirtualnauczelnia.common.Constants;
 import net.machina.wirtualnauczelnia.common.DatasetFields;
@@ -120,10 +121,10 @@ public class WUDataHelper {
                 public void onResponse(Call call, Response response) throws IOException {
                     String sessionId = response.headers().get("Set-Cookie");
                     Log.d(Constants.LOGGER_TAG, "cookies: " + sessionId);
-                    if(!sessionId.contains("ASPXUSERWU")) {
+                    if(response.request().url().toString().equals(ApiDetails.API_ADDRESS_LOGIN)) {
                         Document loadedPage = Jsoup.parse(response.body().string());
                         Element errorElement = loadedPage.body().selectFirst(ApiDetails.API_FIELD_LOGIN_ERROR);
-                        listener.onDataReceived(false, errorElement.ownText());
+                        listener.onDataReceived(false, errorElement != null ? errorElement.ownText() : mContext.getString(R.string.error_login));
                     } else {
                         Matcher matcher = Pattern.compile("[0-9A-F]{8,}").matcher(sessionId);
                         matcher.find();
@@ -137,6 +138,30 @@ public class WUDataHelper {
         }
     }
 
+    public void logout(final OnNetworkDataReceivedListener listener) {
+        Request request = new Request.Builder()
+                .addHeader("User-Agent", "Mozilla/5.0")
+                .get()
+                .url(ApiDetails.API_ADDRESS_LOGOUT)
+                .build();
+        try {
+            httpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    listener.onDataReceived(false, null);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if(response.request().url().toString().equals(ApiDetails.API_ADDRESS_LOGIN)) listener.onDataReceived(true, null);
+                    else listener.onDataReceived(false, null);
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            listener.onDataReceived(false, ex.getMessage());
+        }
+    }
 
     public void getLoggedInUser(final OnNetworkDataReceivedListener listener) {
         try {

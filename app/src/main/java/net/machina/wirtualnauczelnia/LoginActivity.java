@@ -1,5 +1,6 @@
 package net.machina.wirtualnauczelnia;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,11 +49,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         chkRemember = (CheckBox) findViewById(R.id.login_chkRemember);
         dataHelper = WUDataHelper.getInstance(getApplicationContext());
         btnLogin.setOnClickListener(this);
+        if(preferences.contains(PreferencesFields.SHARED_PREFS_KEY_USERNAME)) {
+            inpLogin.setText(preferences.getString(PreferencesFields.SHARED_PREFS_KEY_USERNAME, ""));
+        }
         if(preferences.getBoolean(PreferencesFields.SHARED_PREFS_KEY_REMEMBER,false)) {
             doLogin(true);
         }
     }
 
+    @SuppressLint("ApplySharedPref")
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
@@ -91,17 +96,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         dataHelper.login(loginDetails, (isSuccessful, data) -> {
             dialog.cancel();
             if(!isSuccessful) {
-                preferences.edit()
+                runOnUiThread(() -> {
+                    preferences.edit()
                         .remove(PreferencesFields.SHARED_PREFS_KEY_REMEMBER)
                         .apply();
 
-                new AlertDialog.Builder(LoginActivity.this)
+                    new AlertDialog.Builder(LoginActivity.this)
                         .setTitle(R.string.label_warning)
                         .setIcon(R.drawable.ic_warning_black)
                         .setMessage(data)
                         .setCancelable(true)
                         .setPositiveButton("OK", null)
                         .show();
+                });
             } else {
                 try {
                     File cacheFile = new File(getApplicationContext().getFilesDir(), Constants.CACHE_SESSIONID);
