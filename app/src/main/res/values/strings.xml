@@ -32,4 +32,7 @@
     <string name="ask_logout">Czy na pewno chcesz się wylogować?</string>
     <string name="button_yes">Tak</string>
     <string name="button_no">Nie</string>
+    <string name="btn_previous">Poprzedni</string>
+    <string name="btn_next">Następny</string>
+    <string name="label_schedule">Harmonogram zajęć</string>
 </resources>

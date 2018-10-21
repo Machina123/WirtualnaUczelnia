@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Placeholder Course Name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            android:textAppearance="@android:style/TextAppearance.Material.Title" />
 
         <TextView
             android:id="@+id/grade_additionalInfo"

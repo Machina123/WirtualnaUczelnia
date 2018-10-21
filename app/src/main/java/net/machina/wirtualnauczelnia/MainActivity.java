@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected TextView txtLoggedIn;
     protected WUDataHelper dataHelper;
-    protected Button btnGrades;
+    protected Button btnGrades, btnSchedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +30,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtLoggedIn = (TextView) findViewById(R.id.main_txtLoggedIn);
         btnGrades = (Button) findViewById(R.id.main_btnGrades);
         btnGrades.setOnClickListener(this);
+
+        btnSchedule = findViewById(R.id.main_btnSchedule);
+        btnSchedule.setOnClickListener(this);
+
         dataHelper = WUDataHelper.getInstance(getApplicationContext());
         if(savedInstanceState == null) {
             dataHelper.getLoggedInUser(((isSuccessful, data) -> {
@@ -86,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch(v.getId()) {
             case R.id.main_btnGrades:
                 startIntent = new Intent(MainActivity.this, GradesActivity.class);
+                break;
+            case R.id.main_btnSchedule:
+                startIntent = new Intent(MainActivity.this, ScheduleActivity.class);
                 break;
             default:
                 return;

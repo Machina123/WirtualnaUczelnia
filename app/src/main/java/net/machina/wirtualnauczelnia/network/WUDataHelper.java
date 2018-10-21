@@ -38,6 +38,7 @@ public class WUDataHelper {
     private Context mContext;
     private OkHttpClient httpClient;
     private boolean previousTermGradesAvailable = false, nextTermGradesAvailable = false;
+    private boolean previousWeekScheduleAvailable = false, nextWeekScheduleAvailable = false;
 
     private String mViewState, mViewStateGenerator, mEventValidation;
 
@@ -72,6 +73,21 @@ public class WUDataHelper {
         this.nextTermGradesAvailable = nextTermGradesAvailable;
     }
 
+    public boolean isPreviousWeekScheduleAvailable() {
+        return previousWeekScheduleAvailable;
+    }
+
+    public void setPreviousWeekScheduleAvailable(boolean previousWeekScheduleAvailable) {
+        this.previousWeekScheduleAvailable = previousWeekScheduleAvailable;
+    }
+
+    public boolean isNextWeekScheduleAvailable() {
+        return nextWeekScheduleAvailable;
+    }
+
+    public void setNextWeekScheduleAvailable(boolean nextWeekScheduleAvailable) {
+        this.nextWeekScheduleAvailable = nextWeekScheduleAvailable;
+    }
 
     private void init() {
         Request request = new Request.Builder()
@@ -223,7 +239,7 @@ public class WUDataHelper {
         }
 
         FormBody formBody = new FormBody.Builder()
-                .add(ApiDetails.API_FIELD_BUTTON_GRADES_PREV, ApiDetails.API_DEF_VALUE_GRADES_PREV)
+                .add(ApiDetails.API_FIELD_BUTTON_GRADES_PREV, ApiDetails.API_DEF_VALUE_BUTTON_PREV)
                 .add(ApiDetails.API_FIELD_VIEWSTATE, mViewState)
                 .add(ApiDetails.API_FIELD_VIEWSTATE_GENERATOR, mViewStateGenerator)
                 .add(ApiDetails.API_FIELD_EVENT_VALIDATION, mEventValidation)
@@ -257,7 +273,7 @@ public class WUDataHelper {
         }
 
         FormBody formBody = new FormBody.Builder()
-                .add(ApiDetails.API_FIELD_BUTTON_GRADES_NEXT, ApiDetails.API_DEF_VALUE_GRADES_NEXT)
+                .add(ApiDetails.API_FIELD_BUTTON_GRADES_NEXT, ApiDetails.API_DEF_VALUE_BUTTON_NEXT)
                 .add(ApiDetails.API_FIELD_VIEWSTATE, mViewState)
                 .add(ApiDetails.API_FIELD_VIEWSTATE_GENERATOR, mViewStateGenerator)
                 .add(ApiDetails.API_FIELD_EVENT_VALIDATION, mEventValidation)
@@ -319,6 +335,142 @@ public class WUDataHelper {
                 }
                 listener.onDatasetReceived(true, list);
             } else listener.onDatasetReceived(false, null);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            listener.onDatasetReceived(false, null);
+        }
+    }
+
+    public void getCurrentWeekSchedule(final OnNetworkDataSetReceivedListener listener) {
+        Request request = new Request.Builder()
+                .addHeader("User-Agent", "Mozilla/5.0")
+                .url(ApiDetails.API_ADDRESS_SCHEDULE)
+                .get()
+                .build();
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onDatasetReceived(false, null);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                parseScheduleResponse(response, listener);
+            }
+        });
+
+    }
+
+    public void getPreviousWeekSchedule(final OnNetworkDataSetReceivedListener listener) {
+        if(!isPreviousWeekScheduleAvailable()) {
+            listener.onDatasetReceived(false, null);
+            return;
+        }
+
+        FormBody formBody = new FormBody.Builder()
+                .add(ApiDetails.API_FIELD_VIEWSTATE, mViewState)
+                .add(ApiDetails.API_FIELD_VIEWSTATE_GENERATOR, mViewStateGenerator)
+                .add(ApiDetails.API_FIELD_EVENT_VALIDATION, mEventValidation)
+                .add(ApiDetails.API_FIELD_SCHEDULE_BUTTON_PREV, ApiDetails.API_DEF_VALUE_BUTTON_PREV)
+                .add(ApiDetails.API_FIELD_SCHEDULE_RANGE, ApiDetails.API_DEF_VALUE_SCHEDULE_WEEKLY)
+                .build();
+
+        Request request = new Request.Builder()
+                .addHeader("User-Agent", "Mozilla/5.0")
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .url(ApiDetails.API_ADDRESS_SCHEDULE)
+                .post(formBody)
+                .build();
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onDatasetReceived(false, null);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                parseScheduleResponse(response, listener);
+            }
+        });
+    }
+
+    public void getNextWeekSchedule(final OnNetworkDataSetReceivedListener listener) {
+        if(!isNextWeekScheduleAvailable()) {
+            listener.onDatasetReceived(false, null);
+            return;
+        }
+
+        FormBody formBody = new FormBody.Builder()
+                .add(ApiDetails.API_FIELD_VIEWSTATE, mViewState)
+                .add(ApiDetails.API_FIELD_VIEWSTATE_GENERATOR, mViewStateGenerator)
+                .add(ApiDetails.API_FIELD_EVENT_VALIDATION, mEventValidation)
+                .add(ApiDetails.API_FIELD_SCHEDULE_BUTTON_NEXT, ApiDetails.API_DEF_VALUE_BUTTON_NEXT)
+                .add(ApiDetails.API_FIELD_SCHEDULE_RANGE, ApiDetails.API_DEF_VALUE_SCHEDULE_WEEKLY)
+                .build();
+
+        Request request = new Request.Builder()
+                .addHeader("User-Agent", "Mozilla/5.0")
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .url(ApiDetails.API_ADDRESS_SCHEDULE)
+                .post(formBody)
+                .build();
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onDatasetReceived(false, null);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                parseScheduleResponse(response, listener);
+            }
+        });
+    }
+
+    private void parseScheduleResponse(Response response, final OnNetworkDataSetReceivedListener listener) {
+
+        try {
+            Log.d(Constants.LOGGER_TAG, "WUDataHelper/parseScheduleResponse - response url: " + response.request().url().toString());
+            Document document = Jsoup.parse(response.body().string());
+            Elements elements = document.select(ApiDetails.API_SELECTOR_GRID_DATAROW);
+
+            if(elements != null) {
+                mViewState = document.selectFirst(ApiDetails.API_SELECTOR_VIEWSTATE).val();
+                mViewStateGenerator = document.selectFirst(ApiDetails.API_SELECTOR_VIEWSTATEGEN).val();
+                mEventValidation = document.selectFirst(ApiDetails.API_SELECTOR_EVENTVALIDATION).val();
+
+                Element btnPrevious = document.selectFirst(ApiDetails.API_SELECTOR_SCHEDULE_BUTTON_PREV);
+                if(btnPrevious != null) this.setPreviousWeekScheduleAvailable(true);
+                else this.setPreviousWeekScheduleAvailable(false);
+
+                Element btnNext = document.selectFirst(ApiDetails.API_SELECTOR_SCHEDULE_BUTTON_NEXT);
+                if(btnNext != null) this.setNextWeekScheduleAvailable(true);
+                else this.setNextWeekScheduleAvailable(false);
+
+                HashMap<String, String> weekInfo = new HashMap<>();
+                String currentWeekData = document.selectFirst(ApiDetails.API_SELECTOR_SCHEDULE_CURR_WEEK).ownText();
+                weekInfo.put(DatasetFields.DS_SCHEDULE_CURR_WEEK, currentWeekData);
+                Log.d(Constants.LOGGER_TAG, "WUDataHelper/parseScheduleResponse: currentWeek: " + currentWeekData);
+
+                ArrayList<HashMap<String, String>> scheduleData = new ArrayList<>();
+                scheduleData.add(weekInfo);
+
+                for(Element scheduleEntry : elements) {
+                    int fieldIterator = 0;
+                    HashMap<String, String> parsedScheduleEntry = new HashMap<>();
+                    for(Element entryDetails: scheduleEntry.children()) {
+                        parsedScheduleEntry.put(DatasetFields.DS_SCHEDULE_DETAILS[fieldIterator++], entryDetails.wholeText());
+                    }
+                    scheduleData.add(parsedScheduleEntry);
+                }
+
+                listener.onDatasetReceived(true, scheduleData);
+
+            } else listener.onDatasetReceived(false, null);
+
         } catch(Exception ex) {
             ex.printStackTrace();
             listener.onDatasetReceived(false, null);

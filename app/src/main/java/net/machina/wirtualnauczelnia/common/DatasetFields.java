@@ -13,4 +13,17 @@ public class DatasetFields {
             "gradeComission",
             "ectsCount"
     };
+
+    public static final String DS_SCHEDULE_CURR_WEEK = "currentWeek";
+    public static final String[] DS_SCHEDULE_DETAILS = {
+            "date",
+            "hourStart",
+            "hourEnd",
+            "lectureName",
+            "lecturer",
+            "lecturePlace",
+            "lectureBuildingAddr",
+            "lectureForm",
+            "lecturePassForm"
+    };
 }
