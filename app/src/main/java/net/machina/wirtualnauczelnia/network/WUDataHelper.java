@@ -458,13 +458,24 @@ public class WUDataHelper {
                 ArrayList<HashMap<String, String>> scheduleData = new ArrayList<>();
                 scheduleData.add(weekInfo);
 
-                for(Element scheduleEntry : elements) {
-                    int fieldIterator = 0;
-                    HashMap<String, String> parsedScheduleEntry = new HashMap<>();
-                    for(Element entryDetails: scheduleEntry.children()) {
-                        parsedScheduleEntry.put(DatasetFields.DS_SCHEDULE_DETAILS[fieldIterator++], entryDetails.wholeText());
+                Element elemScheduleEmpty = document.selectFirst(ApiDetails.API_SELECTOR_SCHEDULE_EMPTY);
+                if(elemScheduleEmpty == null) {
+                    for (Element scheduleEntry : elements) {
+                        int fieldIterator = 0;
+                        HashMap<String, String> parsedScheduleEntry = new HashMap<>();
+                        for (Element entryDetails : scheduleEntry.children()) {
+                            parsedScheduleEntry.put(DatasetFields.DS_SCHEDULE_DETAILS[fieldIterator++], entryDetails.wholeText());
+                        }
+                        scheduleData.add(parsedScheduleEntry);
                     }
-                    scheduleData.add(parsedScheduleEntry);
+                } else {
+                    HashMap<String,String> parsedErrorMessage = new HashMap<>();
+                    parsedErrorMessage.put(DatasetFields.DS_SCHEDULE_DETAILS[0], currentWeekData);
+                    parsedErrorMessage.put(DatasetFields.DS_SCHEDULE_DETAILS[1], "00:00");
+                    parsedErrorMessage.put(DatasetFields.DS_SCHEDULE_DETAILS[2], "23:59");
+                    parsedErrorMessage.put(DatasetFields.DS_SCHEDULE_DETAILS[3], elemScheduleEmpty.ownText());
+                    for(int i=4; i<9; i++) parsedErrorMessage.put(DatasetFields.DS_SCHEDULE_DETAILS[i], "");
+                    scheduleData.add(parsedErrorMessage);
                 }
 
                 listener.onDatasetReceived(true, scheduleData);

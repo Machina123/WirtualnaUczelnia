@@ -35,6 +35,7 @@ public class ApiDetails {
     public static final String API_SELECTOR_SCHEDULE_BUTTON_NEXT = "#ctl00_ctl00_ContentPlaceHolder_RightContentPlaceHolder_butN";
     public static final String API_SELECTOR_SCHEDULE_BUTTON_PREV = "#ctl00_ctl00_ContentPlaceHolder_RightContentPlaceHolder_butP";
     public static final String API_SELECTOR_SCHEDULE_CURR_WEEK = "#ctl00_ctl00_ContentPlaceHolder_RightContentPlaceHolder_lblData";
+    public static final String API_SELECTOR_SCHEDULE_EMPTY = "#ctl00_ctl00_ContentPlaceHolder_RightContentPlaceHolder_lblBrak";
 
 //  domyślne pola wysyłane zawsze
     public static final String API_SELECTOR_VIEWSTATE = "input[name=__VIEWSTATE]";
