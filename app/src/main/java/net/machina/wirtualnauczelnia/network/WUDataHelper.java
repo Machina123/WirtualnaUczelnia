@@ -135,16 +135,17 @@ public class WUDataHelper {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    String sessionId = response.headers().get("Set-Cookie");
-                    Log.d(Constants.LOGGER_TAG, "cookies: " + sessionId);
+//                    String sessionId = response.headers().get("Set-Cookie");
+//                    Log.d(Constants.LOGGER_TAG, "cookies: " + sessionId);
                     if(response.request().url().toString().equals(ApiDetails.API_ADDRESS_LOGIN)) {
                         Document loadedPage = Jsoup.parse(response.body().string());
                         Element errorElement = loadedPage.body().selectFirst(ApiDetails.API_FIELD_LOGIN_ERROR);
                         listener.onDataReceived(false, errorElement != null ? errorElement.ownText() : mContext.getString(R.string.error_login));
                     } else {
-                        Matcher matcher = Pattern.compile("[0-9A-F]{8,}").matcher(sessionId);
-                        matcher.find();
-                        listener.onDataReceived(true, matcher.group(0));
+//                        Matcher matcher = Pattern.compile("[0-9A-F]{8,}").matcher(sessionId);
+//                        matcher.find();
+//                        listener.onDataReceived(true, matcher.group(0));
+                        listener.onDataReceived(true, "");
                     }
                 }
             });
